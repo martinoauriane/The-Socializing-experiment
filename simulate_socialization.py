@@ -1,13 +1,35 @@
 from enum import Enum
 from math import *
 
-""" the goal here is the simulate how different people would create links between them. 
-They are symbolically represented by nodes in a graph. 
-Thanks to mathematical laws, we're going to arbitrary define some factors which will shape their socialization. 
-"""
 
 """
-1. SIMILARITY 
+What you need for this experiment: 
+- a graph
+- nodes 
+- links between those nodes
+- probably a computer
+- a terminal 
+- python3 with a venv environment
+- a set of willing people
+- a set of friendless still-willing people
+- some corriander 
+- and.. a bunch of euclidian distances! 
+let the game BEGIN!
+
+RULES:
+- Each person is symbolically represented by a node in the graph. 
+- The goal here is the simulate how different people would socialize. By socialize we mean making a friend (yay!). 
+If certain criterias are met, two people form a friendship and their nodes are now linked on the graph. 
+On the contrary, if they don't meet the pre-defined friendship requirements, they won't pass the test and won't become friends (sad!).
+
+REMINDER : Each person is symbolically represented by a node in the graph. 
+"""
+
+
+""" UNIVERSAL LAWS OF MATING ON THIS EARTH.  """
+
+"""
+RULE N°1. SIMILARITY 
 If two people share similar traits, they're more likely to form a connection. 
 Which is equivalent to say, two nodes are more likely to be linked. 
 """
@@ -90,11 +112,9 @@ def is_similar(node1, node2):
 
 
 
-""" SECOND RULE :
-using triadic to closure. People with common friends are more likely to become friends than complete strangers with no common
-acquaintances. To take this reality into account, we recalculate probabilities for nodes with small distances to each other. To do so, 
-we use the CLOSURE_BOOST variable. 
- """
+""" RULE N°2. TRIADIC CLOSURE :
+People with common friends are more likely to become friends than complete strangers with no common acquaintances. To take this reality into account, 
+we recalculate probabilities for nodes with small distances to each other. To do so, we use the CLOSURE_BOOST variable. """
 def triadic_closure(graph_nodes, people):
   for a in graph_nodes:
     for b in graph_nodes[a]:
@@ -111,10 +131,10 @@ def triadic_closure(graph_nodes, people):
 
 
 
-""" THIRD RULE:
-    The more someone has friends, the more they'll make new ones. 
-    We could modelize this the following way: the more friends someone has, the highest the probability to meet that person.
-"""
+""" RULE N°3: EXPONENTIAL POPULARITY
+The more someone has friends, the more they'll make new ones. We could modelize this the following way: the more friends someone has, the highest the probability 
+to meet that person. """
+
 def popularity(graph_nodes, people):
     for i in range(len(people)):
         for j in range(i + 1, len(people)):
@@ -148,7 +168,7 @@ def build_connection_graph(people):
     """ step 2: triadic closure """
     triadic_closure(graph_nodes, people)
 
-    """ step 3 : popularity. number of friends """
+    """ step 3 : popularity. """
     graph_nodes = popularity(graph_nodes, people)
     
     return graph_nodes

@@ -24,6 +24,8 @@ What would it look like if we just had nodes and tried to recreate a socializing
 - country
 - city
 - gender
+- movie tastes
+- favorite sport
 - age
 - etc
 
@@ -31,7 +33,29 @@ What would it look like if we just had nodes and tried to recreate a socializing
 
 **Third rule**: the more popular someone is (meaning, the more friends someone has), the more likely he is to make new connections. Which is why already popular people tend to become exponentionnaly more connected to others. It's a virtuous circle. The more friends you have, the more you'll make new ones.
 
-_Credits_: This project was inspired by the fouloscopie youtube channel.
+#### What you need for this experiment:
+
+- a graph
+- nodes
+- links between those nodes
+- probably a computer
+- a terminal
+- python3 with a venv environment
+- a set of willing people
+- a set of friendless still-willing people
+- some corriander
+- and.. a bunch of euclidian distances!
+
+let the game BEGIN!
+
+**RULES**:
+
+- Each person is symbolically represented by a node in the graph.
+- The goal here is the simulate how different people would socialize. By socialize we mean making a friend (yay!).
+- If certain criterias are met, two people form a friendship and their nodes are now linked on the graph.
+- On the contrary, if they don't meet the pre-defined friendship requirements, they won't pass the test and won't become friends (sad!).
+
+_Credits_: This project was inspired by the Fouloscopie youtube channel.
 
 _Sources_:
 
