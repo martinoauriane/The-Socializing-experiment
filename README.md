@@ -16,7 +16,11 @@ As of 2010, Facebook's social graph is the largest social network dataset in the
 
 #### Can we predict connections between people?
 
-What would it look like if we just had nodes and tried to recreate a socializing experience. What friendships would end up forming? It's the question we're asking ourselves today. The goal is the understand (if there is one) the science between the socializing process. It turns out there a rules:
+What would it look like if we just had nodes and tried to recreate a socializing experience. What friendships would end up forming? It's the question we're asking ourselves today. The goal is the understand (if there is one) the science between the socializing process.
+
+Well...
+
+It turns out there are rules:
 
 **First rule:** people tend to become friends with people like them. The more traits you share with someone, the more likely you'll become friends.
 
