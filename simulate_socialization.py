@@ -25,15 +25,6 @@ On the contrary, if they don't meet the pre-defined friendship requirements, the
 REMINDER : Each person is symbolically represented by a node in the graph. 
 """
 
-
-""" UNIVERSAL LAWS OF MATING ON THIS EARTH.  """
-
-"""
-RULE N°1. SIMILARITY 
-If two people share similar traits, they're more likely to form a connection. 
-Which is equivalent to say, two nodes are more likely to be linked. 
-"""
-
 class Sport(Enum):
     FOOTBALL = 1
     DANCE = 2
@@ -42,7 +33,6 @@ class Sport(Enum):
 class Gender(Enum):
     MALE = 1
     FEMALE = 2
-
 
 """ using vectors to modelize movie tastes """
 movies_features = {
@@ -55,9 +45,7 @@ movies_features = {
     "A_BOUT_DE_SOUFFLE": {"action":0, "drama":1, "arthouse":1, "sci-fi":0},
 }
 
-
-""" The people array is a collection of objects with different attributes for each person.  """
-
+""" fake data """
 people = [
   {"name": "Anna", "Age": 40, "Hobbies": Sport["FOOTBALL"], "Gender": Gender["FEMALE"]},
   {"name": "Alfred", "Age": 88, "Hobbies": Sport["RUNNING"], "Gender": Gender["MALE"]},
@@ -66,21 +54,25 @@ people = [
   {"name": "Elise", "Age": 30, "Hobbies": Sport["FOOTBALL"], "Gender": Gender["FEMALE"]},
 ]
 
-
-
+""" Influence variables kit """
 THRESHOLD = 0.69
-""" influence of the triadic closure """
 CLOSURE_BOOST = 0.15 
 FRIENDS_INFLUENCE = 0.20
 
-""" FIRST RULE: the more someone is like us (same gender, same age, etc), the likier we are to become friends with that person"""
+
+
+""" UNIVERSAL LAWS OF MATING ON THIS EARTH.  """
+
+"""
+RULE N°1. SIMILARITY 
+If two people share similar traits, they're more likely to form a connection. Which is equivalent to say, two nodes are more likely to be linked. 
+"""
+
 
 """ first to get the right movie score we define euclidian distance between two vectors. each vector represents a movie. """
 max_dist = sqrt(len(next(iter(movies_features.values()))))  
-
 """ if two movies share exactly the same caracteristics (vector1 == vector2), then the distance between them = 0. 
 On the other hand, if the two films are totally opposed, then dist = max_dist """
-
 def movie_similarity(f1, f2):
     vector1 = movies_features[f1.name]
     vector2 = movies_features[f2.name]
