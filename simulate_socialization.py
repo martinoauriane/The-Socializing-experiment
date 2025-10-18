@@ -21,6 +21,19 @@ class Gender(Enum):
     MALE = 1
     FEMALE = 2
 
+
+""" using vectors to modelize movie tastes """
+movies_features = {
+    "FASTANDFURIOUS": {"action":1, "drama":0, "arthouse":0, "sci-fi":0},
+    "THE_DEVIL_WEARS_PRADA": {"action":0, "drama":1, "arthouse":0, "sci-fi":0},
+    "THE_LORDS_OF_THE_RINGS": {"action":1, "drama":1, "arthouse":0, "sci-fi":1},
+    "STAR_WARS": {"action":1, "drama":1, "arthouse":0, "sci-fi":1},
+    "2001": {"action":0, "drama":0, "arthouse":1, "sci-fi":1},
+    "ANDREI_RUBLEV": {"action":0, "drama":1, "arthouse":1, "sci-fi":0},
+    "A_BOUT_DE_SOUFFLE": {"action":0, "drama":1, "arthouse":1, "sci-fi":0},
+}
+
+
 """ The people array is a collection of objects with different attributes for each person.  """
 
 people = [
@@ -39,14 +52,40 @@ CLOSURE_BOOST = 0.15
 FRIENDS_INFLUENCE = 0.20
 
 """ FIRST RULE: the more someone is like us (same gender, same age, etc), the likier we are to become friends with that person"""
+
+""" first to get the right movie score we define euclidian distance between two vectors. each vector represents a movie. """
+max_dist = sqrt(len(next(iter(movies_features.values()))))  
+
+""" if two movies share exactly the same caracteristics (vector1 == vector2), then the distance between them = 0. 
+On the other hand, if the two films are totally opposed, then dist = max_dist """
+
+def movie_similarity(f1, f2):
+    vector1 = movies_features[f1.name]
+    vector2 = movies_features[f2.name]
+    distance = sqrt(sum((vector1[k] - vector2[k])**2 for k in vector1))
+    similarity =  1 - distance / max_dist 
+    """ similarity = 1 : the two movies are alike. 
+     similarity = 0 : the two movies are different. """
+    return similarity
+
+
 def is_similar(node1, node2):
     weight_age = 5
     weight_gender = 3
     weight_hobbies = 1
+    weight_movie = 2  
 
     dist = sqrt(weight_age * pow(node1["Age"] - node2["Age"], 2) + weight_gender * pow(node1["Gender"].value - node2["Gender"].value, 2) + weight_hobbies * pow(node1["Hobbies"].value - node2["Hobbies"].value)) / sqrt( weight_age * 6 + weight_gender + weight_hobbies)
     """ if the similarity score is superior to a particular defined threshold, then a connection will be formed"""
+
     similarity_score = 1 - dist / 100
+
+    """ we add the movie score to the total score """
+    movie_score = 0
+    if "FavoriteMovie" in node1 and "FavoriteMovie" in node2:
+        movie_score = movie_similarity(node1["FavoriteMovie"], node2["FavoriteMovie"])
+
+    similarity_score = similarity_score + weight_movie * movie_score / 10
     return similarity_score
 
 
