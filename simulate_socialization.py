@@ -31,20 +31,28 @@ people = [
   {"name": "Elise", "Age": 30, "Hobbies": Sport["FOOTBALL"], "Gender": Gender["FEMALE"]},
 ]
 
+
+
 THRESHOLD = 0.69
 """ influence of the triadic closure """
 CLOSURE_BOOST = 0.15 
+FRIENDS_INFLUENCE = 0.20
 
+""" FIRST RULE: the more someone is like us (same gender, same age, etc), the likier we are to become friends with that person"""
 def is_similar(node1, node2):
     weight_age = 5
     weight_gender = 3
     weight_hobbies = 1
 
     dist = sqrt(weight_age * pow(node1["Age"] - node2["Age"], 2) + weight_gender * pow(node1["Gender"].value - node2["Gender"].value, 2) + weight_hobbies * pow(node1["Hobbies"].value - node2["Hobbies"].value)) / sqrt( weight_age * 6 + weight_gender + weight_hobbies)
-    P = 1 - dist / 100
-    return P
+    """ if the similarity score is superior to a particular defined threshold, then a connection will be formed"""
+    similarity_score = 1 - dist / 100
+    return similarity_score
 
-""" using triadic to closure. People with common friends are more likely to become friends than complete strangers with no common
+
+
+""" SECOND RULE :
+using triadic to closure. People with common friends are more likely to become friends than complete strangers with no common
 acquaintances. To take this reality into account, we recalculate probabilities for nodes with small distances to each other. To do so, 
 we use the CLOSURE_BOOST variable. 
  """
@@ -60,12 +68,36 @@ def triadic_closure(graph_nodes, people):
                 graph_nodes[a].append(c)
                 graph_nodes[c].append(a)
     return graph_nodes
-    
-""" if the similarity score is superior to a particular defined threshold, then a connection will be formed"""
+
+
+
+
+""" THIRD RULE:
+    The more someone has friends, the more they'll make new ones. 
+    We could modelize this the following way: the more friends someone has, the highest the probability to meet that person.
+"""
+def popularity(graph_nodes, people):
+    for i in range(len(people)):
+        for j in range(i + 1, len(people)):
+            p1, p2 = people[i], people[j]
+            p1_friends = len(graph_nodes[people[i]["name"]])
+            p2_friends = len(graph_nodes[people[j]["name"]])
+
+            # If either is socially active, increase the connection probability
+            if p1_friends > 5 or p2_friends > 5:
+                P = is_similar(p1, p2) + FRIENDS_INFLUENCE
+                if P > THRESHOLD:
+                    if p2["name"] not in graph_nodes[p1["name"]]:
+                        graph_nodes[p1["name"]].append(p2["name"])
+                        graph_nodes[p2["name"]].append(p1["name"])
+    return graph_nodes
+
+
 def build_connection_graph(people):
     graph_nodes = {person["name"]: [] for person in people}
     i = 1
 
+    """ step 1: mere similarity """
     for i in range(len(people)):
         for j in range(i + 1, len(people)):
             p1, p2 = people[i], people[j]
@@ -74,7 +106,12 @@ def build_connection_graph(people):
                 graph_nodes[p1["name"]].append(p2["name"])
                 graph_nodes[p2["name"]].append(p1["name"])
     
+    """ step 2: triadic closure """
     triadic_closure(graph_nodes, people)
+
+    """ step 3 : popularity. number of friends """
+    graph_nodes = popularity(graph_nodes, people)
+    
     return graph_nodes
 
 connection_graph = build_connection_graph(people)
