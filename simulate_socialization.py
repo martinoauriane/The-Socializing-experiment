@@ -33,6 +33,8 @@ people = [
 ]
 
 THRESHOLD = 0.69
+""" influence of the triadic closure """
+CLOSURE_BOOST = 0.15 
 
 def is_similar(node1, node2):
     weight_age = 5
@@ -43,8 +45,24 @@ def is_similar(node1, node2):
     P = 1 - dist / 100
     return P
 
+""" using triadic to closure. People with common friends are more likely to become friends than complete strangers with no common
+acquaintances. To take this reality into account, we recalculate probabilities for nodes with small distances to each other. To do so, 
+we use the CLOSURE_BOOST variable. 
+ """
+def triadic_closure(graph_nodes, people):
+  for a in graph_nodes:
+    for b in graph_nodes[a]:
+        for c in graph_nodes[b]:
+            if c != a and c not in graph_nodes[a]:
+              p1 = next(p for p in people if p["name"] == a)
+              p2 = next(p for p in people if p["name"] == c)
+              P = is_similar(p1, p2) + CLOSURE_BOOST
+              if P > THRESHOLD:
+                graph_nodes[a].append(c)
+                graph_nodes[c].append(a)
+    return graph_nodes
+    
 """ if the similarity score is superior to a particular defined threshold, then a connection will be formed"""
-
 def build_connection_graph(people):
     graph_nodes = {person["name"]: [] for person in people}
     i = 1
@@ -56,6 +74,8 @@ def build_connection_graph(people):
             if P > THRESHOLD:
                 graph_nodes[p1["name"]].append(p2["name"])
                 graph_nodes[p2["name"]].append(p1["name"])
+    
+    triadic_closure(graph_nodes, people)
     return graph_nodes
 
 connection_graph = build_connection_graph(people)
