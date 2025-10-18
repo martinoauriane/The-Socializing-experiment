@@ -171,6 +171,6 @@ def build_connection_graph(people):
 
 
 
-""" and voilà! (print result graph) """
+""" (print result graph) """
 connection_graph = build_connection_graph(people)
 print(connection_graph)
