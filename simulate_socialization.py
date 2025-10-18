@@ -146,7 +146,8 @@ def popularity(graph_nodes, people):
 
 
 
-""" NOW, LET'S BUILD OUR GRAPH OF FRIENDSHIPS!
+""" now, let's build the friendship graph.
+
 we'll call each of our rules and try to see how they influence the friend-making process. """
 def build_connection_graph(people):
     graph_nodes = {person["name"]: [] for person in people}
