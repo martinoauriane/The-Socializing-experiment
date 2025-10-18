@@ -126,7 +126,6 @@ def triadic_closure(graph_nodes, people):
 """ RULE N°3: EXPONENTIAL POPULARITY
 The more someone has friends, the more they'll make new ones. We could modelize this the following way: the more friends someone has, the highest the probability 
 to meet that person. """
-
 def popularity(graph_nodes, people):
     for i in range(len(people)):
         for j in range(i + 1, len(people)):
@@ -144,6 +143,11 @@ def popularity(graph_nodes, people):
     return graph_nodes
 
 
+
+
+
+""" NOW, LET'S BUILD OUR GRAPH OF FRIENDSHIPS!
+we'll call each of our rules and try to see how they influence the friend-making process. """
 def build_connection_graph(people):
     graph_nodes = {person["name"]: [] for person in people}
     i = 1
@@ -165,5 +169,8 @@ def build_connection_graph(people):
     
     return graph_nodes
 
+
+
+""" and voilà! (print result graph) """
 connection_graph = build_connection_graph(people)
 print(connection_graph)
