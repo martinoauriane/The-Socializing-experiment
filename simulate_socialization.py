@@ -12,7 +12,6 @@ If two people share similar traits, they're more likely to form a connection.
 Which is equivalent to say, two nodes are more likely to be linked. 
 """
 
-
 class Sport(Enum):
     FOOTBALL = 1
     DANCE = 2
