@@ -6,7 +6,7 @@ This project tries to modelize predictive socializing behaviors between people b
 
 #### Defining the social graph
 
-A **social graph** is a graph that represents social relations between entities. It is a **model** or **representation** of a social network. The social graph has been referred to as "the global mapping of everybody and how they're related". In the graph below, each person is represented by a dot called a node, and the relationshio from one person to another is represented by a line.
+A **social graph** is a graph that represents social relations between entities. It is a **model** or **representation** of a social network. The social graph has been referred to as "the global mapping of everybody and how they're related". In the graph below, each person is represented by a dot called a node, and the relationship from one person to another is represented by a line.
 
 #### Did you know?
 
