@@ -35,70 +35,89 @@ class Gender(Enum):
     FEMALE = 2
 
 """ using vectors to modelize movie tastes """
-movies_features = {
-    "FASTANDFURIOUS": {"action":1, "drama":0, "arthouse":0, "sci-fi":0},
-    "THE_DEVIL_WEARS_PRADA": {"action":0, "drama":1, "arthouse":0, "sci-fi":0},
-    "THE_LORDS_OF_THE_RINGS": {"action":1, "drama":1, "arthouse":0, "sci-fi":1},
-    "STAR_WARS": {"action":1, "drama":1, "arthouse":0, "sci-fi":1},
-    "2001": {"action":0, "drama":0, "arthouse":1, "sci-fi":1},
-    "ANDREI_RUBLEV": {"action":0, "drama":1, "arthouse":1, "sci-fi":0},
-    "A_BOUT_DE_SOUFFLE": {"action":0, "drama":1, "arthouse":1, "sci-fi":0},
+
+movies = {
+    # action, drama, arthouse, sci-fi, comedy, 
+    "Fast_and_furious": [1, 0, 0, 1, 0],
+    "The_devil_wears_prada": [0, 1, 0, 0, 1],
+    "The_Lord_Of_The_Rings": [1, 1, 0, 1, 1],
+    "Star_Wars": [1, 1, 0, 1, 1],
+    "2001_A_Space_Odyssey": [0, 0, 1, 1, 0],
+    "Andrei_Rublev": [0, 0, 1, 0, 0],
+    "A_bout_de_souffle": [0, 0, 1, 0, 0],
+    "Rabbi_Jacob": [1, 0, 0, 0, 1]
 }
+movies_category = ["action", "drama, arthouse", "sci-fi", "comedy"]
+
+
+hobbies = {
+    #Sport activity, artistic activity, nerd activity, manual activity
+    "Running": [1, 0, 0, 0],
+    "Football": [1, 0, 0, 0],
+    "Painting": [0, 1, 0, 1],
+    "Singing": [0.5, 1, 0, 0],
+    "Coding": [0, 0.5, 1, 0],
+    "Math": [0, 0, 1, 0],
+    "Cooking": [0, 0.5, 0, 1],
+    "History": [0, 0, 1, 0],
+    "Writing": [0, 1, 1, 0]
+}
+hobbies_categories = ["Sport", "Artistic", "Nerd", "Manual"]
 
 """ fake data """
 people = [
-  {"name": "Anna", "Age": 40, "Hobbies": Sport["FOOTBALL"], "Gender": Gender["FEMALE"]},
-  {"name": "Alfred", "Age": 88, "Hobbies": Sport["RUNNING"], "Gender": Gender["MALE"]},
-  {"name": "Sara", "Age": 22, "Hobbies": Sport["DANCE"], "Gender": Gender["FEMALE"]},
-  {"name": "Tom", "Age": 56, "Hobbies": Sport["RUNNING"], "Gender": Gender["MALE"]},
-  {"name": "Elise", "Age": 30, "Hobbies": Sport["FOOTBALL"], "Gender": Gender["FEMALE"]},
+  {"name": "Stephane", "Age": 56, "Hobbies": hobbies["History"], "Gender": Gender["MALE"], "Favourite_movie": movies["Star_Wars"]},
+  {"name": "Jagger", "Age": 25, "Hobbies": hobbies["Football"], "Gender": Gender["MALE"], "Favourite_movie": movies["Andrei_Rublev"]},
+  {"name": "Sophie", "Age": 55, "Hobbies": hobbies["Running"], "Gender": Gender["FEMALE"], "Favourite_movie": movies["The_devil_wears_prada"]},
+  {"name": "Auriane", "Age": 26, "Hobbies": hobbies["Coding"], "Gender": Gender["FEMALE"], "Favourite_movie": movies["A_bout_de_souffle"]},
+  {"name": "Manon", "Age": 26, "Hobbies": hobbies["Writing"], "Gender": Gender["FEMALE"], "Favourite_movie": movies["A_bout_de_souffle"]},
+  {"name": "Cyan", "Age": 24, "Hobbies": hobbies["Math"], "Gender": Gender["MALE"], "Favourite_movie": movies["The_Lord_Of_The_Rings"]},
+  {"name": "René", "Age": 88, "Hobbies": hobbies["Football"], "Gender": Gender["MALE"], "Favourite_movie": movies["Rabbi_Jacob"]}
 ]
 
 """ Influence variables kit """
-THRESHOLD = 0.69
-CLOSURE_BOOST = 0.15 
-FRIENDS_INFLUENCE = 0.20
-
-
-""" UNIVERSAL LAWS OF MATING ON THIS EARTH.  """
+THRESHOLD = 0.85
+CLOSURE_BOOST = 0.10 
+FRIENDS_INFLUENCE = 0.10
+WEIGHT_AGE = 0.5
+WEIGHT_GENDER = 0.2
+WEIGHT_HOBBIES = 0.2
+WEIGHT_MOVIES = 0.2
 
 """
 RULE N°1. SIMILARITY 
 If two people share similar traits, they're more likely to form a connection. Which is equivalent to say, two nodes are more likely to be linked. 
 """
 
-
-""" first to get the right movie score we define euclidian distance between two vectors. each vector represents a movie. """
-max_dist = sqrt(len(next(iter(movies_features.values()))))  
-""" if two movies share exactly the same caracteristics (vector1 == vector2), then the distance between them = 0. 
-On the other hand, if the two films are totally opposed, then dist = max_dist """
-def movie_similarity(f1, f2):
-    vector1 = movies_features[f1.name]
-    vector2 = movies_features[f2.name]
-    distance = sqrt(sum((vector1[k] - vector2[k])**2 for k in vector1))
-    similarity =  1 - distance / max_dist 
-    """ similarity = 1 : the two movies are alike. 
-     similarity = 0 : the two movies are different. """
+#calculate distance between vectors
+def movie_similarity(movie1, movie2): # movie 1 and movie 2 are represented by vector. 
+    similarity = 0
+    distance = 0
+    for i in range(len(movie1)):
+        distance += (movie1[i] - movie2[i]) ** 2
+    distance = sqrt(distance)
+    similarity = 1 - (distance / sqrt(len(movie1)))
     return similarity
 
+def hobbie_similarity(hobbie1, hobbie2):
+    similarity = 0
+    distance = 0
+    for i in range(len(hobbie1)):
+        distance += pow(hobbie1[i] - hobbie2[i], 2) # euclidian distance
+    distance = sqrt(distance)
+    similarity = 1 - (distance / sqrt(len(hobbie1)))
+    return similarity
 
 def is_similar(node1, node2):
-    weight_age = 5
-    weight_gender = 3
-    weight_hobbies = 1
-    weight_movie = 2  
-
-    dist = sqrt(weight_age * pow(node1["Age"] - node2["Age"], 2) + weight_gender * pow(node1["Gender"].value - node2["Gender"].value, 2) + weight_hobbies * pow(node1["Hobbies"].value - node2["Hobbies"].value)) / sqrt( weight_age * 6 + weight_gender + weight_hobbies)
-    """ if the similarity score is superior to a particular defined threshold, then a connection will be formed"""
-
+    dist = sqrt(WEIGHT_AGE * pow(node1["Age"] - node2["Age"], 2) + WEIGHT_GENDER * pow(node1["Gender"].value - node2["Gender"].value, 2) ) / sqrt( WEIGHT_AGE + WEIGHT_GENDER + WEIGHT_HOBBIES)
     similarity_score = 1 - dist / 100
 
-    """ we add the movie score to the total score """
-    movie_score = 0
-    if "FavoriteMovie" in node1 and "FavoriteMovie" in node2:
-        movie_score = movie_similarity(node1["FavoriteMovie"], node2["FavoriteMovie"])
 
-    similarity_score = similarity_score + weight_movie * movie_score / 10
+    """ we add the movie score to the total score """
+    movie_score = movie_similarity(node1["Favourite_movie"], node2["Favourite_movie"])
+    hobbie_score = hobbie_similarity(node1["Hobbies"], node2["Hobbies"])
+    similarity_score += WEIGHT_MOVIES * movie_score / 10
+    similarity_score += WEIGHT_HOBBIES * hobbie_score / 10
     return similarity_score
 
 
@@ -171,5 +190,9 @@ def build_connection_graph(people):
 
 
 """ (print result graph) """
+print("People before connecting:\n")
+for p in people: 
+    print(f"Name: {p["name"]} Age: {p["Age"]} Hobbies:{p["Hobbies"]} Gender: {p["Gender"]} Favourite Movie: {p["Favourite_movie"]}")
+
 connection_graph = build_connection_graph(people)
 print(connection_graph)
