@@ -11,31 +11,21 @@ What you need for this experiment:
 - a terminal 
 - python3 with a venv environment
 - a set of willing people
-- a set of friendless still-willing people
-- some corriander 
-- and.. a bunch of euclidian distances! 
-let the game BEGIN!
+- a bunch of euclidian distances
+let the game begin!
 
 RULES:
 - Each person is symbolically represented by a node in the graph. 
-- The goal here is the simulate how different people would socialize. By socialize we mean making a friend (yay!). 
-If certain criterias are met, two people form a friendship and their nodes are now linked on the graph. 
-On the contrary, if they don't meet the pre-defined friendship requirements, they won't pass the test and won't become friends (sad!).
-
-REMINDER : Each person is symbolically represented by a node in the graph. 
+- The goal is the simulate friendships forming between different people. 
+- If two people have enough in common,they will form a friendship and their nodes will be linked on the graph. 
+- If they're too different, they won't become friends.
 """
-
-class Sport(Enum):
-    FOOTBALL = 1
-    DANCE = 2
-    RUNNING = 3
 
 class Gender(Enum):
     MALE = 1
     FEMALE = 2
 
-""" using vectors to modelize movie tastes """
-
+movies_category = ["action", "drama, arthouse", "sci-fi", "comedy"]
 movies = {
     # action, drama, arthouse, sci-fi, comedy, 
     "Fast_and_furious": [1, 0, 0, 1, 0],
@@ -47,9 +37,8 @@ movies = {
     "A_bout_de_souffle": [0, 0, 1, 0, 0],
     "Rabbi_Jacob": [1, 0, 0, 0, 1]
 }
-movies_category = ["action", "drama, arthouse", "sci-fi", "comedy"]
 
-
+hobbies_categories = ["Sport", "Artistic", "Nerd", "Manual"]
 hobbies = {
     #Sport activity, artistic activity, nerd activity, manual activity
     "Running": [1, 0, 0, 0],
@@ -62,7 +51,6 @@ hobbies = {
     "History": [0, 0, 1, 0],
     "Writing": [0, 1, 1, 0]
 }
-hobbies_categories = ["Sport", "Artistic", "Nerd", "Manual"]
 
 """ fake data """
 people = [
@@ -79,14 +67,14 @@ people = [
 THRESHOLD = 0.85
 CLOSURE_BOOST = 0.10 
 FRIENDS_INFLUENCE = 0.10
-WEIGHT_AGE = 0.5
-WEIGHT_GENDER = 0.2
+WEIGHT_AGE = 0.4
+WEIGHT_GENDER = 0.1
 WEIGHT_HOBBIES = 0.2
-WEIGHT_MOVIES = 0.2
+WEIGHT_MOVIES = 0.3
 
 """
 RULE N°1. SIMILARITY 
-If two people share similar traits, they're more likely to form a connection. Which is equivalent to say, two nodes are more likely to be linked. 
+If two people share similar traits, they're more likely to form a connection. Which is equivalent to say, two nodes in the graph are more likely to be linked. 
 """
 
 #calculate distance between vectors
@@ -161,16 +149,12 @@ def popularity(graph_nodes, people):
     return graph_nodes
 
 
-
-
-
-""" now, let's build the friendship graph.
-we'll call each of our rules and try to see how they influence the friend-making process. """
+""" now, let's build the friendship graph. we'll call each of our rules and try to see how they influence the friend-making process. """
 def build_connection_graph(people):
     graph_nodes = {person["name"]: [] for person in people}
     i = 1
 
-    """ step 1: mere similarity """
+    """ step 1: similarity """
     for i in range(len(people)):
         for j in range(i + 1, len(people)):
             p1, p2 = people[i], people[j]
@@ -186,7 +170,6 @@ def build_connection_graph(people):
     graph_nodes = popularity(graph_nodes, people)
     
     return graph_nodes
-
 
 
 """ (print result graph) """
