@@ -107,7 +107,7 @@ def is_similar(node1, node2):
 
 
 
-""" RULE N°2. TRIADIC CLOSURE :
+""" RULE N°2. TRIADIC CLOSURE / FERMETURE TRIADIQUE+ :
 People with common friends are more likely to become friends than complete strangers with no common acquaintances. 
 It's about the distance between two people. 
 To take this reality into account, we recalculate probabilities for nodes with small distances to each other. To do so, we use the CLOSURE_BOOST variable. """
@@ -153,11 +153,12 @@ def popularity(graph_nodes, people):
 """ now, let's build the friendship graph. we'll call each of our rules and try to see how they influence the friend-making process. """
 def build_connection_graph(people):
     #intialize an empty graph 
-    graph_nodes = {person["name"]: [] for person in people}
+    graph_nodes = {}
+    for person in people: 
+        graph_nodes[person['name']] = []
     i = 1
 
 # apply the tree socializing rules  
-
     """ step 1: similarity """
     for i in range(len(people)):
         for j in range(i + 1, len(people)):
