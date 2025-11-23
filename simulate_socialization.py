@@ -40,7 +40,7 @@ movies = {
 
 hobbies_categories = ["Sport", "Artistic", "Nerd", "Manual"]
 hobbies = {
-    #Sport activity, artistic activity, nerd activity, manual activity
+    # Sport, Art, Nerd, Manual
     "Running": [1, 0, 0, 0],
     "Football": [1, 0, 0, 0],
     "Painting": [0, 1, 0, 1],
@@ -64,7 +64,7 @@ people = [
 ]
 
 """ Influence variables kit """
-THRESHOLD = 0.85
+FRIEND_THRESHOLD = 0.85
 CLOSURE_BOOST = 0.10 
 FRIENDS_INFLUENCE = 0.10
 WEIGHT_AGE = 0.4
@@ -73,7 +73,7 @@ WEIGHT_HOBBIES = 0.2
 WEIGHT_MOVIES = 0.3
 
 """
-RULE N°1. SIMILARITY 
+RULE N°1. HOMOPHILIA / SIMILARITY 
 If two people share similar traits, they're more likely to form a connection. Which is equivalent to say, two nodes in the graph are more likely to be linked. 
 """
 
@@ -99,11 +99,8 @@ def hobbie_similarity(hobbie1, hobbie2):
 def is_similar(node1, node2):
     dist = sqrt(WEIGHT_AGE * pow(node1["Age"] - node2["Age"], 2) + WEIGHT_GENDER * pow(node1["Gender"].value - node2["Gender"].value, 2) ) / sqrt( WEIGHT_AGE + WEIGHT_GENDER + WEIGHT_HOBBIES)
     similarity_score = 1 - dist / 100
-
-
-    """ we add the movie score to the total score """
-    movie_score = movie_similarity(node1["Favourite_movie"], node2["Favourite_movie"])
-    hobbie_score = hobbie_similarity(node1["Hobbies"], node2["Hobbies"])
+    movie_score = movie_similarity(node1["Favourite_movie"], node2["Favourite_movie"]) # we add the movie score to the total score
+    hobbie_score = hobbie_similarity(node1["Hobbies"], node2["Hobbies"]) # we add the hobbie score to the total score 
     similarity_score += WEIGHT_MOVIES * movie_score / 10
     similarity_score += WEIGHT_HOBBIES * hobbie_score / 10
     return similarity_score
@@ -111,19 +108,23 @@ def is_similar(node1, node2):
 
 
 """ RULE N°2. TRIADIC CLOSURE :
-People with common friends are more likely to become friends than complete strangers with no common acquaintances. To take this reality into account, 
-we recalculate probabilities for nodes with small distances to each other. To do so, we use the CLOSURE_BOOST variable. """
+People with common friends are more likely to become friends than complete strangers with no common acquaintances. 
+It's about the distance between two people. 
+To take this reality into account, we recalculate probabilities for nodes with small distances to each other. To do so, we use the CLOSURE_BOOST variable. """
 def triadic_closure(graph_nodes, people):
-  for a in graph_nodes:
-    for b in graph_nodes[a]:
-        for c in graph_nodes[b]:
-            if c != a and c not in graph_nodes[a]:
-              p1 = next(p for p in people if p["name"] == a)
-              p2 = next(p for p in people if p["name"] == c)
+  for friend_a in graph_nodes:
+    for friend_b in graph_nodes[friend_a]:
+        for friend_c in graph_nodes[friend_b]:
+            if friend_c != friend_a and friend_c not in graph_nodes[friend_a]: # a -- b -- c
+              for person in people:
+                  if person["name"] == friend_a:
+                      p1 = person
+                  if p["name"] == friend_c:
+                      p2 = person
               P = is_similar(p1, p2) + CLOSURE_BOOST
-              if P > THRESHOLD:
-                graph_nodes[a].append(c)
-                graph_nodes[c].append(a)
+              if P > FRIEND_THRESHOLD:
+                graph_nodes[friend_a].append(friend_c)
+                graph_nodes[friend_c].append(friend_a)
     return graph_nodes
 
 
@@ -136,13 +137,13 @@ def popularity(graph_nodes, people):
     for i in range(len(people)):
         for j in range(i + 1, len(people)):
             p1, p2 = people[i], people[j]
-            p1_friends = len(graph_nodes[people[i]["name"]])
-            p2_friends = len(graph_nodes[people[j]["name"]])
+            p1_num_friends = len(graph_nodes[people[i]["name"]])
+            p2_num_friends = len(graph_nodes[people[j]["name"]])
 
             # If either is socially active, increase the connection probability
-            if p1_friends > 5 or p2_friends > 5:
+            if p1_num_friends > 5 or p2_num_friends > 5:
                 P = is_similar(p1, p2) + FRIENDS_INFLUENCE
-                if P > THRESHOLD:
+                if P > FRIEND_THRESHOLD:
                     if p2["name"] not in graph_nodes[p1["name"]]:
                         graph_nodes[p1["name"]].append(p2["name"])
                         graph_nodes[p2["name"]].append(p1["name"])
@@ -151,20 +152,23 @@ def popularity(graph_nodes, people):
 
 """ now, let's build the friendship graph. we'll call each of our rules and try to see how they influence the friend-making process. """
 def build_connection_graph(people):
+    #intialize an empty graph 
     graph_nodes = {person["name"]: [] for person in people}
     i = 1
+
+# apply the tree socializing rules  
 
     """ step 1: similarity """
     for i in range(len(people)):
         for j in range(i + 1, len(people)):
             p1, p2 = people[i], people[j]
             P = is_similar(p1, p2)
-            if P > THRESHOLD:
+            if P > FRIEND_THRESHOLD:
                 graph_nodes[p1["name"]].append(p2["name"])
                 graph_nodes[p2["name"]].append(p1["name"])
     
     """ step 2: triadic closure """
-    triadic_closure(graph_nodes, people)
+    graph_nodes = triadic_closure(graph_nodes, people)
 
     """ step 3 : popularity. """
     graph_nodes = popularity(graph_nodes, people)
